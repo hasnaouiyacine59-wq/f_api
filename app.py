@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 import psycopg2
 from datetime import datetime, timezone
@@ -17,36 +17,35 @@ def init_db():
     cur.execute('''
         CREATE TABLE IF NOT EXISTS visits (
             id SERIAL PRIMARY KEY,
-            ip VARCHAR(45),
+            ip VARCHAR(45) UNIQUE,
             country VARCHAR(100),
             device VARCHAR(255),
-            time TIMESTAMPTZ DEFAULT NOW()
+            time TIMESTAMPTZ
         )
     ''')
     conn.commit()
     cur.close()
     conn.close()
 
-def log_visit():
+@app.route('/api/v1/status', methods=['POST'])
+def status():
+    data = request.get_json()
+    ip = data.get('ip')
     conn = get_db()
     cur = conn.cursor()
+    cur.execute('SELECT 1 FROM visits WHERE ip = %s', (ip,))
+    if cur.fetchone():
+        cur.close()
+        conn.close()
+        return jsonify({'message': 'exist'}), 200
     cur.execute(
         'INSERT INTO visits (ip, country, device, time) VALUES (%s, %s, %s, %s)',
-        (
-            request.remote_addr,
-            request.headers.get('CF-IPCountry', 'unknown'),
-            request.headers.get('User-Agent', 'unknown'),
-            datetime.now(timezone.utc)
-        )
+        (ip, data.get('country'), data.get('device'), data.get('time', datetime.now(timezone.utc)))
     )
     conn.commit()
     cur.close()
     conn.close()
-
-@app.route('/api/v1/status')
-def status():
-    log_visit()
-    return {'status': 'ok'}, 200
+    return jsonify({'message': 'ok'}), 200
 
 if __name__ == '__main__':
     init_db()
