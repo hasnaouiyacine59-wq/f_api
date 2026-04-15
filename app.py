@@ -21,9 +21,9 @@ def status(ip):
         with conn.cursor() as cur:
             cur.execute('SELECT 1 FROM visits WHERE ip = %s', (ip,))
             if cur.fetchone():
-                return jsonify({'message': 'exist'}), 200
+                return jsonify({'message': 'yes'}), 200
             cur.execute('INSERT INTO visits (ip) VALUES (%s)', (ip,))
-    return jsonify({'message': 'ok'}), 200
+    return jsonify({'message': 'no'}), 200
 
 if __name__ == '__main__':
     init_db()
