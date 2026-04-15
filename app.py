@@ -38,6 +38,7 @@ def check_ip(ip):
             cur.execute('SELECT 1 FROM visits WHERE ip = %s', (ip,))
             if cur.fetchone():
                 return jsonify({'used': 'yes'}), 200
+            cur.execute('INSERT INTO visits (ip) VALUES (%s)', (ip,))
     return jsonify({'used': 'no'}), 200
 
 @app.route('/api/v1/status', methods=['POST'])
