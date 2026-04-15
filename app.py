@@ -47,20 +47,18 @@ def status():
     ip = d.get('ip')
     with get_db() as conn:
         with conn.cursor() as cur:
-            cur.execute('SELECT 1 FROM visits WHERE ip = %s', (ip,))
-            if cur.fetchone():
-                return jsonify({'used': 'yes'}), 200
             cur.execute('''
-                INSERT INTO visits (ip, country, cc, city, locale, timezone, os, "window", titles, iframes, iframe0_attrs, iframe0_alts)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                UPDATE visits SET country=%s, cc=%s, city=%s, locale=%s, timezone=%s, os=%s,
+                "window"=%s, titles=%s, iframes=%s, iframe0_attrs=%s, iframe0_alts=%s
+                WHERE ip=%s
             ''', (
-                ip, d.get('country'), d.get('cc'), d.get('city'),
+                d.get('country'), d.get('cc'), d.get('city'),
                 d.get('locale'), d.get('timezone'), d.get('os'),
                 json.dumps(d.get('window')), json.dumps(d.get('titles')),
                 json.dumps(d.get('iframes')), json.dumps(d.get('iframe0_attrs')),
-                json.dumps(d.get('iframe0_alts'))
+                json.dumps(d.get('iframe0_alts')), ip
             ))
-    return jsonify({'used': 'no'}), 200
+    return jsonify({'used': 'yes'}), 200
 
 if __name__ == '__main__':
     init_db()
