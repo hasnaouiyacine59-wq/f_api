@@ -31,6 +31,15 @@ def init_db():
                 )
             ''')
 
+@app.route('/api/v1/<ip>')
+def check_ip(ip):
+    with get_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute('SELECT 1 FROM visits WHERE ip = %s', (ip,))
+            if cur.fetchone():
+                return jsonify({'used': 'yes'}), 200
+    return jsonify({'used': 'no'}), 200
+
 @app.route('/api/v1/status', methods=['POST'])
 def status():
     d = request.get_json()
