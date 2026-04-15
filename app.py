@@ -23,7 +23,7 @@ def init_db():
                     locale VARCHAR(20),
                     timezone VARCHAR(100),
                     os VARCHAR(50),
-                    window JSONB,
+                    "window" JSONB,
                     titles JSONB,
                     iframes JSONB,
                     iframe0_attrs JSONB,
@@ -41,7 +41,7 @@ def status():
             if cur.fetchone():
                 return jsonify({'used': 'yes'}), 200
             cur.execute('''
-                INSERT INTO visits (ip, country, cc, city, locale, timezone, os, window, titles, iframes, iframe0_attrs, iframe0_alts)
+                INSERT INTO visits (ip, country, cc, city, locale, timezone, os, "window", titles, iframes, iframe0_attrs, iframe0_alts)
                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             ''', (
                 ip, d.get('country'), d.get('cc'), d.get('city'),
