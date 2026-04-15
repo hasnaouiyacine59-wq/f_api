@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify
 from dotenv import load_dotenv
 import psycopg2
 
@@ -18,9 +18,9 @@ def init_db():
     cur.close()
     conn.close()
 
-@app.route('/api/v1/status', methods=['POST'])
-def status():
-    ip = request.get_json().get('ip')
+@app.route('/api/v1/<ip>')
+def status(ip):
+    
     conn = get_db()
     cur = conn.cursor()
     cur.execute('SELECT 1 FROM visits WHERE ip = %s', (ip,))
