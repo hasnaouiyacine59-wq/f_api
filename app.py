@@ -17,6 +17,7 @@ def init_db():
             cur.execute('''
                 CREATE TABLE IF NOT EXISTS visits (
                     ip VARCHAR(45) UNIQUE,
+                    device_id VARCHAR(100),
                     country VARCHAR(100),
                     cc VARCHAR(10),
                     city VARCHAR(100),
@@ -48,11 +49,11 @@ def status():
     with get_db() as conn:
         with conn.cursor() as cur:
             cur.execute('''
-                UPDATE visits SET country=%s, cc=%s, city=%s, locale=%s, timezone=%s, os=%s,
+                UPDATE visits SET device_id=%s, country=%s, cc=%s, city=%s, locale=%s, timezone=%s, os=%s,
                 "window"=%s, titles=%s, iframes=%s, iframe0_attrs=%s, iframe0_alts=%s
                 WHERE ip=%s
             ''', (
-                d.get('country'), d.get('cc'), d.get('city'),
+                d.get('device_id'), d.get('country'), d.get('cc'), d.get('city'),
                 d.get('locale'), d.get('timezone'), d.get('os'),
                 json.dumps(d.get('window')), json.dumps(d.get('titles')),
                 json.dumps(d.get('iframes')), json.dumps(d.get('iframe0_attrs')),
